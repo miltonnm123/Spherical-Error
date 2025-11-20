@@ -593,9 +593,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1a3de8e0d846dc4d9f34afc24737c92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 596059091}
-  offset: {x: 0, y: 10, z: -13}
-  smoothSpeed: 0.001
+  target: {fileID: 572233720}
+  distance: 10
+  minDistance: 0.5
+  height: 5
+  rotationSpeed: 200
+  collisionLayers:
+    serializedVersion: 2
+    m_Bits: 8
+  offset: {x: 0, y: 0, z: 0}
+  smoothSpeed: 0.1
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -825,6 +832,37 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 551307022}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &572233719
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 572233720}
+  m_Layer: 0
+  m_Name: CameraTarget
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &572233720
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 572233719}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.469, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 596059091}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &596059084
 GameObject:
   m_ObjectHideFlags: 0
@@ -855,7 +893,7 @@ Rigidbody:
   m_GameObject: {fileID: 596059084}
   serializedVersion: 4
   m_Mass: 1
-  m_Drag: 1
+  m_Drag: 4
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
@@ -885,8 +923,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc6aa900be25635499d4b643302894ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerSpeed: 10
-  jumpForce: 15
+  cameraTransform: {fileID: 330585546}
+  playerSpeed: 35
+  rotationSpeed: 15
+  jumpForce: 25
   jumpBufferTime: 0.2
   coyoteTime: 0.1
   groundCheck: {fileID: 1071766581}
@@ -895,7 +935,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   isGrounded: 0
-  fallMultiplier: 2.5
+  fallMultiplier: 7
 --- !u!135 &596059088
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -984,6 +1024,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1071766581}
+  - {fileID: 572233720}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &802020033

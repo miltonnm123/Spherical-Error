@@ -3,16 +3,16 @@ using UnityEngine.UIElements;
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] private float playerSpeed;
-
     private Rigidbody rb;
+    [SerializeField] private Transform cameraTransform;
 
+    [SerializeField] private float playerSpeed;
+    [SerializeField] private float rotationSpeed = 10f;
 
     private Vector3 move;
 
     [Header("Jumping")]
     [SerializeField] private float jumpForce = 5f;
-
 
     [SerializeField] private float jumpBufferTime = 0.1f;
     private float jumpBufferCounter;
@@ -26,6 +26,7 @@ public class PlayerController : MonoBehaviour
 
     public bool isGrounded;
 
+
     [Header("Gravity")]
     [SerializeField] private float fallMultiplier = 2.5f;
 
@@ -33,14 +34,37 @@ public class PlayerController : MonoBehaviour
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        rb.freezeRotation = true;
     }
     
     void Update()
     {
-        float moveX = Input.GetAxisRaw("Horizontal");
-        float moveZ = Input.GetAxisRaw("Vertical");
+        float inputX = Input.GetAxisRaw("Horizontal");
+        float inputZ = Input.GetAxisRaw("Vertical");
+        Vector3 inputDir = new Vector3(inputX, 0f, inputZ).normalized;
 
-        move = new Vector3(moveX, 0f, moveZ);
+        if (inputDir.magnitude >= 0.1f)
+        {
+            Vector3 camForward = cameraTransform.forward;
+            Vector3 camRight = cameraTransform.right;
+
+            camForward.y = 0;
+            camRight.y = 0;
+            camForward.Normalize();
+            camRight.Normalize();
+
+            move = camForward * inputZ + camRight * inputX;
+
+            // Smooth rotation toward movement direction
+            Quaternion targetRotation = Quaternion.LookRotation(move);
+            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+        }
+        else
+        {
+            move = Vector3.zero;
+        }
+
+
 
         isGrounded = Physics.CheckSphere(groundCheck.position, groundCheckRadius, groundLayer);
 
@@ -62,8 +86,15 @@ public class PlayerController : MonoBehaviour
     {
         rb.AddForce(move * playerSpeed, ForceMode.Acceleration);
 
-        if(!isGrounded && rb.linearVelocity.y < 1)
-            rb.AddForce(Vector3.up * Physics.gravity.y * (fallMultiplier - 1f), ForceMode.Acceleration);
+        if (!isGrounded)
+        {
+            if (rb.linearVelocity.y < 0) // falling
+                rb.AddForce(Vector3.up * Physics.gravity.y * (fallMultiplier - 1f), ForceMode.Acceleration);
+
+            else if (rb.linearVelocity.y > 0 && !Input.GetKey(KeyCode.Space)) // short hop if releasing early
+                rb.AddForce(Vector3.up * Physics.gravity.y * (fallMultiplier / 2f), ForceMode.Acceleration);
+        }
+       
     }
 
     void TryJump()
